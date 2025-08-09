@@ -509,8 +509,8 @@ export default function Dashboard() {
                           </CardDescription>
                         )}
                         
-                        <div className="mt-3 flex items-center justify-between" onClick={(e) => e.preventDefault()}>
-                          <div className="flex items-center space-x-2">
+                        <div className="mt-3 flex items-center justify-between">
+                          <div className="flex items-center space-x-2" onClick={(e) => e.preventDefault()}>
                             <Switch
                               checked={board.isPublic}
                               onCheckedChange={(checked) => handleTogglePublic(board.id, checked)}
