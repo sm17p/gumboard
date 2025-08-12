@@ -1,13 +1,12 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Note as NoteComponent } from "@/components/note"
-import type { Note } from "@/components/note"
-import type { ChecklistItem } from "@/components/checklist-item"
-import { Plus } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import * as React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Note as NoteComponent } from "@/components/note";
+import type { Note } from "@/components/note";
+import { Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const initialNotes: Note[] = [
   {
@@ -17,8 +16,9 @@ const initialNotes: Note[] = [
     done: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    boardId: "demo-board",
     user: {
-      id: "user-1",
+      id: "demo-user",
       name: "Sahil",
       email: "sahil@example.com",
     },
@@ -35,8 +35,9 @@ const initialNotes: Note[] = [
     done: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    boardId: "demo-board",
     user: {
-      id: "user-2",
+      id: "demo-user",
       name: "Michelle",
       email: "michelle@example.com",
     },
@@ -53,8 +54,9 @@ const initialNotes: Note[] = [
     done: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    boardId: "demo-board",
     user: {
-      id: "user-3",
+      id: "demo-user",
       name: "Steve",
       email: "steve@example.com",
     },
@@ -70,8 +72,9 @@ const initialNotes: Note[] = [
     done: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    boardId: "demo-board",
     user: {
-      id: "user-4",
+      id: "demo-user",
       name: "Daniel",
       email: "daniel@example.com",
     },
@@ -80,9 +83,9 @@ const initialNotes: Note[] = [
       { id: "402", content: "PR reviews", checked: true, order: 1 },
     ],
   },
-]
+];
 
-const noteColors = ["bg-yellow-200/70", "bg-teal-200/70", "bg-orange-200/70"]
+const noteColors = ["bg-yellow-200/70", "bg-teal-200/70", "bg-orange-200/70"];
 const authors = [
   { name: "Aaron", initial: "A" },
   { name: "Abdul", initial: "A" },
@@ -279,7 +282,7 @@ const authors = [
   { name: "Wisen", initial: "W" },
   { name: "Yu-Hung", initial: "Y" },
   { name: "Zeta", initial: "Z" },
-]
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -289,7 +292,7 @@ const containerVariants = {
       staggerChildren: 0.15,
     },
   },
-}
+};
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -302,104 +305,22 @@ const itemVariants = {
     y: -20,
     transition: { duration: 0.2 },
   },
-}
+};
 
 export function StickyNotesDemo() {
-  const [notes, setNotes] = useState<Note[]>(initialNotes)
+  const [notes, setNotes] = useState<Note[]>(initialNotes);
 
   const handleUpdateNote = (updatedNote: Note) => {
-    setNotes(notes.map((note) => (note.id === updatedNote.id ? updatedNote : note)))
-  }
+    setNotes(notes.map((note) => (note.id === updatedNote.id ? updatedNote : note)));
+  };
 
   const handleDeleteNote = (noteId: string) => {
-    setNotes(notes.filter((note) => note.id !== noteId))
-  }
-
-  const handleAddChecklistItem = (noteId: string, content: string) => {
-    const note = notes.find((n) => n.id === noteId)
-    if (!note) return
-
-    const newItem: ChecklistItem = {
-      id: `${Date.now()}`,
-      content,
-      checked: false,
-      order: (note.checklistItems || []).length,
-    }
-
-    const updatedNote = {
-      ...note,
-      checklistItems: [...(note.checklistItems || []), newItem],
-    }
-
-    handleUpdateNote(updatedNote)
-  }
-
-  const handleToggleChecklistItem = (noteId: string, itemId: string) => {
-    const note = notes.find((n) => n.id === noteId)
-    if (!note || !note.checklistItems) return
-
-    const updatedItems = note.checklistItems.map((item) =>
-      item.id === itemId ? { ...item, checked: !item.checked } : item
-    )
-
-    const allItemsChecked = updatedItems.every((item) => item.checked)
-
-    const updatedNote = {
-      ...note,
-      checklistItems: updatedItems,
-      done: allItemsChecked,
-    }
-
-    handleUpdateNote(updatedNote)
-  }
-
-  const handleEditChecklistItem = (noteId: string, itemId: string, content: string) => {
-    const note = notes.find((n) => n.id === noteId)
-    if (!note || !note.checklistItems) return
-
-    const updatedItems = note.checklistItems.map((item) =>
-      item.id === itemId ? { ...item, content } : item
-    )
-
-    const updatedNote = {
-      ...note,
-      checklistItems: updatedItems,
-    }
-
-    handleUpdateNote(updatedNote)
-  }
-  
-  const handleReorderChecklistItems = async (noteId: string, newItems: ChecklistItem[]) => {
-    const note = notes.find((n) => n.id === noteId)
-    if (!note || !note.checklistItems) return;
-
-    const allItemsChecked = newItems.every((item) => item.checked);
-
-    setNotes(notes.map((n) =>
-      n.id === noteId ? { ...n, checklistItems: newItems, done: allItemsChecked } : n
-    ));
-  }
-
-  const handleDeleteChecklistItem = (noteId: string, itemId: string) => {
-    const note = notes.find((n) => n.id === noteId)
-    if (!note || !note.checklistItems) return
-
-    const updatedItems = note.checklistItems.filter((item) => item.id !== itemId)
-    const allItemsChecked = updatedItems.every((item) => item.checked)
-
-    const updatedNote = {
-      ...note,
-      checklistItems: updatedItems,
-      done: updatedItems.length > 0 ? allItemsChecked : false,
-    }
-
-    handleUpdateNote(updatedNote)
-  }
-
+    setNotes(notes.filter((note) => note.id !== noteId));
+  };
 
   const handleAddNote = () => {
-    const randomColor = noteColors[Math.floor(Math.random() * noteColors.length)]
-    const randomAuthor = authors[Math.floor(Math.random() * authors.length)]
+    const randomColor = noteColors[Math.floor(Math.random() * noteColors.length)];
+    const randomAuthor = authors[Math.floor(Math.random() * authors.length)];
     const newNote: Note = {
       id: `${Date.now()}`,
       content: "",
@@ -407,17 +328,16 @@ export function StickyNotesDemo() {
       done: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      boardId: "demo-board",
       user: {
-        id: `user-${Date.now()}`,
+        id: "demo-user",
         name: randomAuthor.name,
-        email: `${randomAuthor.name.toLowerCase().replace(/\s+/g, '')}@example.com`,
+        email: `${randomAuthor.name.toLowerCase().replace(/\s+/g, "")}@example.com`,
       },
-      checklistItems: [
-        { id: `${Date.now() + 1}`, content: "New to-do", checked: false, order: 0 },
-      ],
-    }
-    setNotes([newNote, ...notes])
-  }
+      checklistItems: [{ id: `${Date.now() + 1}`, content: "New to-do", checked: false, order: 0 }],
+    };
+    setNotes([newNote, ...notes]);
+  };
 
   return (
     <div className="relative">
@@ -436,18 +356,21 @@ export function StickyNotesDemo() {
         >
           <AnimatePresence>
             {notes.map((note) => (
-              <motion.div key={note.id} className="mb-4 break-inside-avoid" variants={itemVariants} exit="exit" layout>
+              <motion.div
+                key={note.id}
+                className="mb-4 break-inside-avoid"
+                variants={itemVariants}
+                exit="exit"
+                layout
+              >
                 <NoteComponent
+                  addingChecklistItem={null}
+                  className={`${note.color} bg-white dark:bg-zinc-900 p-4`}
                   note={note}
                   currentUser={{ id: "demo-user", name: "Demo User", email: "demo@example.com" }}
                   onUpdate={handleUpdateNote}
                   onDelete={handleDeleteNote}
-                  onAddChecklistItem={handleAddChecklistItem}
-                  onToggleChecklistItem={handleToggleChecklistItem}
-                  onEditChecklistItem={handleEditChecklistItem}
-                  onDeleteChecklistItem={handleDeleteChecklistItem}
-                  onReorderChecklistItems={handleReorderChecklistItems}
-                  className={`${note.color} bg-white dark:bg-zinc-900 p-4`}
+                  syncDB={false}
                 />
               </motion.div>
             ))}
@@ -455,5 +378,5 @@ export function StickyNotesDemo() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

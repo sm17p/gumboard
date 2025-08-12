@@ -76,6 +76,9 @@ export function ChecklistItem({
         "flex items-center group/item rounded gap-3 transition-all duration-200",
         className
       )}
+      // To avoid flaky test locators
+      data-testid={process.env.NODE_ENV !== "production" ? item.id : undefined}
+      data-testorder={process.env.NODE_ENV !== "production" ? item.order : undefined}
     >
       <Checkbox
         checked={item.checked}
@@ -106,9 +109,6 @@ export function ChecklistItem({
               : "text-gray-900 dark:text-gray-100",
             !readonly && "rounded px-1 py-0.5"
           )}
-          // Avoid flaky test
-          data-testid={process.env.NODE_ENV !== "production" ? item.id : undefined}
-          data-testorder={process.env.NODE_ENV !== "production" ? item.order : undefined}
           onClick={() => !readonly && onStartEdit?.(item.id)}
         >
           {item.content}
