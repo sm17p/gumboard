@@ -478,7 +478,7 @@ test.describe("Note Management", () => {
     });
 
     const setupNotesRoute = (page: any, notes: any[]) => {
-      return page.route("**/api/boards/test-board/notes", async (route) => {
+      return page.route("**/api/boards/test-board/notes", async (route: any) => {
         if (route.request().method() === "GET") {
           await route.fulfill({
             status: 200,
@@ -524,7 +524,7 @@ test.describe("Note Management", () => {
       noteId: string,
       didCallUpdateApi: { value: boolean } | null = null
     ) => {
-      return page.route(`**/api/boards/test-board/notes/${noteId}`, async (route) => {
+      return page.route(`**/api/boards/test-board/notes/${noteId}`, async (route: any) => {
         if (route.request().method() === "PUT") {
           if (didCallUpdateApi !== null) didCallUpdateApi.value = true;
 
