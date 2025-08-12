@@ -85,12 +85,6 @@ export function Note({
   syncDB = true,
   style,
 }: NoteProps) {
-  if (note.id === "3" && note.checklistItems) {
-    console.log("🚀 ~ Note ~ note:", note);
-    for (const item of note.checklistItems) {
-      console.log("🚀 ~ Note ~ item:", item);
-    }
-  }
   const [isEditing, setIsEditing] = useState(false);
   const { resolvedTheme } = useTheme();
   const [editContent, setEditContent] = useState(note.content);
