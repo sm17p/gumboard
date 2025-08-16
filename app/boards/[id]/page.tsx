@@ -638,24 +638,33 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   return (
     <div className="min-h-screen max-w-screen bg-zinc-100 dark:bg-zinc-800 bg-dots">
       <div>
-        <div className="mx-2 flex flex-wrap sm:flex-nowrap justify-between items-center h-auto sm:h-16 p-2 sm:p-0">
-          <div className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 rounded-lg dark:border-zinc-800 mt-2 py-2 px-3 flex flex-wrap sm:flex-nowrap items-center sm:space-x-3 w-full sm:w-auto">
+        <div className="mx-0.5 sm:mx-5 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 items-center h-auto sm:h-16 p-2 sm:p-0">
+          <div className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 rounded-lg dark:border-zinc-800 mt-2 py-2 px-3 sm:w-fit grid grid-cols-[1fr_auto] sm:grid-cols-[auto_auto_1fr_auto_auto] gap-2 items-center auto-rows-auto grid-flow-dense">
             {/* Company Name */}
-            <Link href="/dashboard" className="flex-shrink-0 pl-1">
+            <Link href="/dashboard" className="pl-1">
               <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-3">
                 Gumboard
                 <BetaBadge />
               </h1>
             </Link>
-            <div className="h-6 w-px m-1.5 bg-zinc-100 dark:bg-zinc-700" />
+            <div className="h-6 w-px bg-zinc-100 dark:bg-zinc-700 hidden sm:block" />
             {/* Board Selector Dropdown */}
-            <div className="relative board-dropdown flex-1 mr-0 sm:flex-none">
+            <div className="relative board-dropdown col-span-2 sm:col-span-1 min-w-48 sm:max-w-64">
               <Button
                 onClick={() => setShowBoardDropdown(!showBoardDropdown)}
-                className={`flex items-center justify-between ${showBoardDropdown ? "bg-zinc-100 dark:bg-zinc-800" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"} text-foreground dark:text-zinc-100 hover:text-foreground dark:hover:text-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 dark:focus-visible:ring-sky-600 rounded-lg px-2 py-2 cursor-pointer w-full sm:w-auto`}
+                className={`flex items-center justify-between ${showBoardDropdown ? "bg-zinc-100 dark:bg-zinc-800" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"} text-foreground dark:text-zinc-100 hover:text-foreground dark:hover:text-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 dark:focus-visible:ring-sky-600 rounded-lg px-2 py-2 cursor-pointer w-full`}
               >
-                <div>
-                  <div className="text-sm font-semibold text-foreground dark:text-zinc-100">
+                <div className="min-w-0 flex-1">
+                  <div
+                    className="truncate text-sm font-semibold text-foreground dark:text-zinc-100"
+                    title={
+                      boardId === "all-notes"
+                        ? "All notes"
+                        : boardId === "archive"
+                          ? "Archive"
+                          : board?.name || ""
+                    }
+                  >
                     {boardId === "all-notes"
                       ? "All notes"
                       : boardId === "archive"
@@ -753,10 +762,10 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                 </div>
               )}
             </div>
-            <div className="h-6 w-px m-1.5 bg-zinc-100 dark:bg-zinc-700" />
+            <div className="h-6 w-px bg-zinc-100 dark:bg-zinc-700 hidden sm:block" />
 
             {/* Filter Popover */}
-            <div className="relative board-dropdown mr-0" data-slot="filter-popover">
+            <div className="relative board-dropdown" data-slot="filter-popover">
               <FilterPopover
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
@@ -777,9 +786,9 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           </div>
 
           {/* Right side - Search, Add Note and User dropdown */}
-          <div className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 rounded-lg dark:border-zinc-800 mt-2 py-2 px-3 flex flex-wrap sm:flex-nowrap items-center sm:space-x-3 w-full sm:w-auto gap-2 md:gap-0">
+          <div className="bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 rounded-lg dark:border-zinc-800 mt-2 py-2 px-3 grid grid-cols-[1fr_auto] sm:grid-cols-[auto_auto_auto] gap-2 items-center auto-rows-auto grid-flow-dense">
             {/* Search Box */}
-            <div className="relative flex-1 sm:flex-none min-w-[150px]">
+            <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-muted-foreground dark:text-zinc-400" />
               </div>
@@ -791,7 +800,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                 }}
-                className="w-full sm:w-64 pl-10 pr-8 py-2 border border-zinc-100 dark:border-zinc-800 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-600 focus:border-transparent text-sm bg-background dark:bg-zinc-900 text-foreground dark:text-zinc-100 placeholder:text-muted-foreground dark:placeholder:text-zinc-400"
+                className="w-full pl-10 pr-8 py-2 border border-zinc-100 dark:border-zinc-800 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-600 focus:border-transparent text-sm bg-background dark:bg-zinc-900 text-foreground dark:text-zinc-100 placeholder:text-muted-foreground dark:placeholder:text-zinc-400"
               />
               {searchTerm && (
                 <Button
@@ -815,7 +824,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                   handleAddNote();
                 }
               }}
-              className="flex items-center justify-center text-white w-fit h-10 sm:w-auto sm:h-auto sm:space-x-2 bg-sky-600 hover:bg-sky-500 transition-all duration-200 cursor-pointer font-medium"
+              className="flex items-center justify-center text-white h-10 col-span-2 sm:col-span-1 sm:h-auto sm:space-x-2 bg-sky-600 hover:bg-sky-500 transition-all duration-200 cursor-pointer font-medium"
             >
               <span>Add note</span>
             </Button>
