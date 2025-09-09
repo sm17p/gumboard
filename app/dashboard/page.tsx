@@ -11,7 +11,7 @@ import { BetaBadge } from "@/components/ui/beta-badge";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Grid3x3, Archive } from "lucide-react";
+import { Plus, Grid3x3, Archive, Globe, LockKeyhole, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -63,6 +63,12 @@ const formSchema = z.object({
 
 export default function Dashboard() {
   const [boards, setBoards] = useState<DashboardBoard[]>([]);
+  const [stats, setStats] = useState<{
+    allNotesCount: number;
+    archivedNotesCount: number;
+    allNotesLastActivity: string | null;
+    archivedNotesLastActivity: string | null;
+  } | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAddBoardDialogOpen, setIsAddBoardDialogOpen] = useState(false);
@@ -87,7 +93,7 @@ export default function Dashboard() {
     try {
       const [userResponse, boardsResponse] = await Promise.all([
         fetch("/api/user"),
-        fetch("/api/boards"),
+        fetch("/api/boards?withStats=true"),
       ]);
 
       if (userResponse.status === 401) {
@@ -109,8 +115,9 @@ export default function Dashboard() {
       }
 
       if (boardsResponse.ok) {
-        const { boards } = await boardsResponse.json();
+        const { boards, stats } = await boardsResponse.json();
         setBoards(boards);
+        setStats(stats ?? null);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -280,17 +287,41 @@ export default function Dashboard() {
               <Link href="/boards/all-notes">
                 <Card className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer border-2 border-blue-200 dark:border-blue-900 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-950 dark:hover:bg-zinc-900/75">
                   <CardHeader>
-                    <div className="flex items-center space-x-2">
-                      <Grid3x3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      <CardTitle className="text-lg text-blue-900 dark:text-blue-200">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="p-1 rounded text-blue-600 dark:text-blue-400">
+                        <Grid3x3 className="size-5" />
+                      </div>
+                      <CardTitle className="text-lg text-blue-900 dark:text-blue-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         All Notes
                       </CardTitle>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-blue-700 dark:text-blue-300 truncate">
-                      View notes from all boards
-                    </p>
+                  <CardContent className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <p className="text-blue-700 dark:text-blue-300 truncate">
+                        View notes from all boards
+                      </p>
+                    </div>
+                    <div className="mt-auto pt-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            aria-label="Notes Count"
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                          >
+                            {`${stats?.archivedNotesCount ?? 0} ${stats?.archivedNotesCount === 1 ? "note" : "notes"}`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                          <Clock className="size-4" />
+                          <span>
+                            {stats?.allNotesLastActivity
+                              ? formatLastActivity(stats.allNotesLastActivity)
+                              : "No activity"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </Link>
@@ -299,15 +330,40 @@ export default function Dashboard() {
               <Link href="/boards/archive">
                 <Card className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 dark:hover:bg-zinc-900/75">
                   <CardHeader>
-                    <div className="flex items-center space-x-2">
-                      <Archive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                      <CardTitle className="text-lg text-gray-900 dark:text-gray-200">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="p-1 rounded text-gray-600 dark:text-gray-400">
+                        <Archive className="size-5" />
+                      </div>
+                      <CardTitle className="text-lg text-gray-900 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         Archive
                       </CardTitle>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700 dark:text-gray-300 truncate">View archived notes</p>
+                  <CardContent className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <p className="text-gray-700 dark:text-gray-300 truncate">
+                        View archived notes
+                      </p>
+                    </div>
+                    <div className="mt-auto pt-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span
+                          aria-label="Notes Count"
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                        >
+                          {`${stats?.archivedNotesCount ?? 0} ${stats?.archivedNotesCount === 1 ? "note" : "notes"}`}
+                        </span>
+
+                        <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                          <Clock className="size-4" />
+                          <span>
+                            {stats?.archivedNotesLastActivity
+                              ? formatLastActivity(stats.archivedNotesLastActivity)
+                              : "No activity"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </Link>
@@ -316,30 +372,53 @@ export default function Dashboard() {
                 <Link href={`/boards/${board.id}`} key={board.id}>
                   <Card
                     data-board-id={board.id}
-                    className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer whitespace-nowrap bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800"
+                    className="group h-full min-h-34 hover:shadow-lg transition-all cursor-pointer whitespace-nowrap bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-900/70 border-gray-200 dark:border-zinc-800"
                   >
                     <CardHeader>
-                      <div className="grid grid-cols-[1fr_auto] items-start justify-between gap-2">
+                      <div className="flex items-center space-x-1.5 min-w-0">
+                        <div className="p-1 rounded text-gray-600 dark:text-gray-400">
+                          {board.isPublic ? (
+                            <Globe className="size-5" />
+                          ) : (
+                            <LockKeyhole className="size-5 " />
+                          )}
+                        </div>
                         <CardTitle
-                          className="text-lg dark:text-zinc-100 truncate"
+                          className="text-lg dark:text-zinc-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
                           title={board.name}
                         >
                           {board.name}
                         </CardTitle>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mt-0.5">
-                          {board._count.notes} {board._count.notes === 1 ? "note" : "notes"}
-                        </span>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      {board.description && (
-                        <p className="text-slate-600 dark:text-zinc-300 truncate mb-2">
-                          {board.description}
-                        </p>
-                      )}
-                      <p className="text-xs text-slate-500 dark:text-zinc-400">
-                        Last active: {formatLastActivity(board.lastActivityAt)}
+                    <CardContent className="flex flex-col h-full space-y-3">
+                      <p className="text-slate-600 dark:text-zinc-300 truncate min-h-6">
+                        {board.description}
                       </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            aria-label="Notes Count"
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                          >
+                            {board._count.notes} {board._count.notes === 1 ? "note" : "notes"}
+                          </span>
+                          <span
+                            aria-label="Board Visibility"
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              board.isPublic
+                                ? "bg-green-100 dark:bg-green-900/60 text-green-800 dark:text-green-200"
+                                : "bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300"
+                            }`}
+                          >
+                            {board.isPublic ? "Public" : "Private"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-zinc-400">
+                          <Clock className="size-4" />
+                          <span>{formatLastActivity(board.lastActivityAt)}</span>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </Link>

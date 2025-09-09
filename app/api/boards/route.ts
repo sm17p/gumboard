@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await auth();
 
@@ -71,7 +71,79 @@ export async function GET() {
       lastActivityAt: board.notes[0]?.updatedAt ?? board.updatedAt,
     }));
 
-    return NextResponse.json({ boards: boardsWithLastActivityTimestamp });
+    const url = new URL(request.url);
+    const includeStats = url.searchParams.get("withStats") === "true";
+
+    let stats = null;
+    if (includeStats) {
+      const [allNotesCount, archivedNotesCount, allNotesLastActivity, archivedNotesLastActivity] =
+        await Promise.all([
+          // Count all non-deleted, non-archived notes
+          db.note.count({
+            where: {
+              deletedAt: null,
+              archivedAt: null,
+              board: {
+                organizationId: user.organizationId,
+              },
+            },
+          }),
+          // Count all archived notes
+          db.note.count({
+            where: {
+              deletedAt: null,
+              archivedAt: { not: null },
+              board: {
+                organizationId: user.organizationId,
+              },
+            },
+          }),
+          // Get last activity for all notes
+          db.note.findFirst({
+            where: {
+              deletedAt: null,
+              archivedAt: null,
+              board: {
+                organizationId: user.organizationId,
+              },
+            },
+            select: {
+              updatedAt: true,
+            },
+            orderBy: {
+              updatedAt: "desc",
+            },
+          }),
+          // Get last activity for archived notes
+          db.note.findFirst({
+            where: {
+              deletedAt: null,
+              archivedAt: { not: null },
+              board: {
+                organizationId: user.organizationId,
+              },
+            },
+            select: {
+              updatedAt: true,
+            },
+            orderBy: {
+              updatedAt: "desc",
+            },
+          }),
+        ]);
+
+      stats = {
+        allNotesCount,
+        archivedNotesCount,
+        allNotesLastActivity: allNotesLastActivity?.updatedAt || null,
+        archivedNotesLastActivity: archivedNotesLastActivity?.updatedAt || null,
+      };
+    }
+
+    return NextResponse.json({
+      boards: boardsWithLastActivityTimestamp,
+      ...(stats && { stats }),
+    });
   } catch (error) {
     console.error("Error fetching boards:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
