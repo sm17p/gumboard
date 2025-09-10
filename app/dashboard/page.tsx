@@ -287,10 +287,8 @@ export default function Dashboard() {
               <Link href="/boards/all-notes">
                 <Card className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer border-2 border-blue-200 dark:border-blue-900 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-950 dark:hover:bg-zinc-900/75">
                   <CardHeader>
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1 rounded text-blue-600 dark:text-blue-400">
-                        <Grid3x3 className="size-5" />
-                      </div>
+                    <div className="grid grid-cols-[1.25rem_auto] items-center gap-x-2">
+                      <Grid3x3 className="size-5 text-blue-600 dark:text-blue-400" />
                       <CardTitle className="text-lg text-blue-900 dark:text-blue-200">
                         All Notes
                       </CardTitle>
@@ -330,10 +328,8 @@ export default function Dashboard() {
               <Link href="/boards/archive">
                 <Card className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 dark:hover:bg-zinc-900/75">
                   <CardHeader>
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1 rounded text-gray-600 dark:text-gray-400">
-                        <Archive className="size-5" />
-                      </div>
+                    <div className="grid grid-cols-[1.25rem_auto] items-center gap-x-2">
+                      <Archive className="size-5 text-gray-600 dark:text-gray-400" />
                       <CardTitle className="text-lg text-gray-900 dark:text-gray-200">
                         Archive
                       </CardTitle>
@@ -375,14 +371,12 @@ export default function Dashboard() {
                     className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer whitespace-nowrap bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800"
                   >
                     <CardHeader>
-                      <div className="flex items-center space-x-2 min-w-0">
-                        <div className="p-1 rounded text-gray-600 dark:text-gray-400">
-                          {board.isPublic ? (
-                            <Globe className="size-5" />
-                          ) : (
-                            <LockKeyhole className="size-5 " />
-                          )}
-                        </div>
+                      <div className="grid grid-cols-[1.25rem_auto] items-center gap-x-2 min-w-0">
+                        {board.isPublic ? (
+                          <Globe className="size-5 text-gray-600 dark:text-gray-400" />
+                        ) : (
+                          <LockKeyhole className="size-5 text-gray-600 dark:text-gray-400" />
+                        )}
                         <CardTitle
                           className="text-lg dark:text-zinc-100 truncate"
                           title={board.name}
