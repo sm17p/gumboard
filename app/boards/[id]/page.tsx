@@ -6,7 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { ChevronDown, Search, Copy, Trash2, X, EllipsisVertical } from "lucide-react";
+import {
+  Archive,
+  ChevronDown,
+  Grid3x3,
+  Search,
+  Copy,
+  Trash2,
+  X,
+  EllipsisVertical,
+  Globe,
+  LockKeyhole,
+} from "lucide-react";
 import Link from "next/link";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { FilterPopover } from "@/components/ui/filter-popover";
@@ -243,6 +254,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           id: "all-notes",
           name: "All notes",
           description: "Notes from all boards",
+          isPublic: false,
         });
       } else if (boardId === "archive") {
         [allBoardsResponse, notesResponse] = await Promise.all([
@@ -255,6 +267,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           id: "archive",
           name: "Archive",
           description: "Archived notes from all boards",
+          isPublic: false,
         });
       } else {
         [allBoardsResponse, boardResponse, notesResponse] = await Promise.all([
@@ -697,12 +710,28 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                 className="board-dropdown mr-0 min-w-32 sm:max-w-64 col-span-2 sm:col-span-1"
               >
                 <Button variant="ghost" className="flex items-center justify-between p-2 w-full">
-                  <div className="text-sm font-semibold text-foreground dark:text-zinc-100 truncate">
-                    {boardId === "all-notes"
-                      ? "All notes"
-                      : boardId === "archive"
-                        ? "Archive"
-                        : board?.name}
+                  
+                  <div
+                    className="grid grid-cols-[auto_1rem] items-center gap-2 flex-1"
+                  >
+                    <span className="text-sm text-left font-semibold text-foreground dark:text-zinc-100 truncate">
+                      {boardId === "all-notes"
+                        ? "All notes"
+                        : boardId === "archive"
+                          ? "Archive"
+                          : board?.name}
+                    </span>
+                    <span>
+                      {boardId === "all-notes"
+                        ? <Grid3x3 className="size-4 text-muted-foreground" />
+                        : boardId === "archive"
+                          ? <Archive className="size-4 text-muted-foreground" />
+                          : board?.isPublic ? (
+                        <Globe className="size-4 text-muted-foreground" />
+                      ) : (
+                        <LockKeyhole className="size-4 text-muted-foreground" />
+                      )}
+                    </span>
                   </div>
                   <ChevronDown
                     size={16}
@@ -729,7 +758,17 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                             : "text-foreground dark:text-zinc-100"
                         }`}
                       >
-                        <div data-board-name={b.name}>{b.name}</div>
+                        <div
+                          data-board-name={b.name}
+                          className="grid grid-cols-[auto_1rem] items-center gap-2"
+                        >
+                          {b.name}
+                          {b.isPublic ? (
+                            <Globe className="size-4 text-muted-foreground" />
+                          ) : (
+                            <LockKeyhole className="size-4 text-muted-foreground" />
+                          )}
+                        </div>
                       </Link>
                     ))}
                   </div>
@@ -741,25 +780,27 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                   {/* All Notes Option */}
                   <Link
                     href="/boards/all-notes"
-                    className={`rounded-lg font-medium block px-3 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+                    className={`rounded-lg font-medium px-3 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 grid grid-cols-[auto_1rem] items-center gap-2 ${
                       boardId === "all-notes"
                         ? "bg-zinc-100 dark:bg-zinc-800 dark:text-white font-semibold"
                         : "text-foreground dark:text-white"
                     }`}
                   >
                     <div>All notes</div>
+                    <Grid3x3 className="size-4 text-muted-foreground" />
                   </Link>
 
                   {/* Archive Option */}
                   <Link
                     href="/boards/archive"
-                    className={`rounded-lg block font-medium px-3 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+                    className={`rounded-lg font-medium px-3 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 grid grid-cols-[auto_1rem] items-center gap-2 ${
                       boardId === "archive"
                         ? "bg-zinc-100 dark:bg-zinc-800 dark:text-white font-semibold"
                         : "text-foreground dark:text-white"
                     }`}
                   >
                     <div>All archived</div>
+                    <Archive className="size-4 text-muted-foreground" />
                   </Link>
                   <div className="border-t border-zinc-100 dark:border-zinc-800 my-1"></div>
                   <Button
