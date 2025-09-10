@@ -241,6 +241,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           id: "all-notes",
           name: "All notes",
           description: "Notes from all boards",
+          isPublic: false,
         });
       } else if (boardId === "archive") {
         [allBoardsResponse, notesResponse] = await Promise.all([
@@ -252,6 +253,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           id: "archive",
           name: "Archive",
           description: "Archived notes from all boards",
+          isPublic: false,
         });
       } else {
         [allBoardsResponse, boardResponse, notesResponse] = await Promise.all([

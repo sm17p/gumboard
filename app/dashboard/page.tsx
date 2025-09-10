@@ -291,7 +291,7 @@ export default function Dashboard() {
                       <div className="p-1 rounded text-blue-600 dark:text-blue-400">
                         <Grid3x3 className="size-5" />
                       </div>
-                      <CardTitle className="text-lg text-blue-900 dark:text-blue-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <CardTitle className="text-lg text-blue-900 dark:text-blue-200">
                         All Notes
                       </CardTitle>
                     </div>
@@ -334,7 +334,7 @@ export default function Dashboard() {
                       <div className="p-1 rounded text-gray-600 dark:text-gray-400">
                         <Archive className="size-5" />
                       </div>
-                      <CardTitle className="text-lg text-gray-900 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <CardTitle className="text-lg text-gray-900 dark:text-gray-200">
                         Archive
                       </CardTitle>
                     </div>
@@ -349,7 +349,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between gap-2">
                         <span
                           aria-label="Notes Count"
-                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                         >
                           {`${stats?.archivedNotesCount ?? 0} ${stats?.archivedNotesCount === 1 ? "note" : "notes"}`}
                         </span>
@@ -372,10 +372,10 @@ export default function Dashboard() {
                 <Link href={`/boards/${board.id}`} key={board.id}>
                   <Card
                     data-board-id={board.id}
-                    className="group h-full min-h-34 hover:shadow-lg transition-all cursor-pointer whitespace-nowrap bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-900/70 border-gray-200 dark:border-zinc-800"
+                    className="group h-full min-h-34 hover:shadow-lg transition-shadow cursor-pointer whitespace-nowrap bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800"
                   >
                     <CardHeader>
-                      <div className="flex items-center space-x-1.5 min-w-0">
+                      <div className="flex items-center space-x-2 min-w-0">
                         <div className="p-1 rounded text-gray-600 dark:text-gray-400">
                           {board.isPublic ? (
                             <Globe className="size-5" />
@@ -384,7 +384,7 @@ export default function Dashboard() {
                           )}
                         </div>
                         <CardTitle
-                          className="text-lg dark:text-zinc-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                          className="text-lg dark:text-zinc-100 truncate"
                           title={board.name}
                         >
                           {board.name}

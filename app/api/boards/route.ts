@@ -78,7 +78,6 @@ export async function GET(request: NextRequest) {
     if (includeStats) {
       const [allNotesCount, archivedNotesCount, allNotesLastActivity, archivedNotesLastActivity] =
         await Promise.all([
-          // Count all non-deleted, non-archived notes
           db.note.count({
             where: {
               deletedAt: null,
@@ -88,7 +87,6 @@ export async function GET(request: NextRequest) {
               },
             },
           }),
-          // Count all archived notes
           db.note.count({
             where: {
               deletedAt: null,
@@ -98,7 +96,6 @@ export async function GET(request: NextRequest) {
               },
             },
           }),
-          // Get last activity for all notes
           db.note.findFirst({
             where: {
               deletedAt: null,
@@ -114,7 +111,6 @@ export async function GET(request: NextRequest) {
               updatedAt: "desc",
             },
           }),
-          // Get last activity for archived notes
           db.note.findFirst({
             where: {
               deletedAt: null,
