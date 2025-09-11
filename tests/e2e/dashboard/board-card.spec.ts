@@ -6,7 +6,6 @@ test.describe("Board Card", () => {
     testContext,
     testPrisma,
   }) => {
-    // create a board
     const board = await testPrisma.board.create({
       data: {
         name: testContext.getBoardName("Test Board 1"),
@@ -15,8 +14,6 @@ test.describe("Board Card", () => {
         organizationId: testContext.organizationId,
       },
     });
-
-    // create 2 notes and archive one of them
     await testPrisma.note.createMany({
       data: [
         {
@@ -34,7 +31,6 @@ test.describe("Board Card", () => {
       ],
     });
 
-    // get the new board
     const boards = await testPrisma.board.findFirst({
       where: {
         id: board.id,
@@ -62,18 +58,18 @@ test.describe("Board Card", () => {
       orderBy: { createdAt: "desc" },
     });
 
-    // assert that the notes count is 1
     expect(boards?._count.notes).toBe(1);
 
-    // go to dashboard
     await authenticatedPage.goto("/dashboard");
 
-    // go to card header then search for span that contain notes count
     await expect(
       authenticatedPage.locator(`[href="/boards/archive"]`).getByLabel("Notes Count")
     ).toHaveText("1 note");
     await expect(
       authenticatedPage.locator(`[href="/boards/${board.id}"]`).getByLabel("Notes Count")
+    ).toHaveText("1 note");
+    await expect(
+      authenticatedPage.locator(`[href="/boards/all-notes"]`).getByLabel("Notes Count")
     ).toHaveText("1 note");
   });
 
@@ -103,7 +99,7 @@ test.describe("Board Card", () => {
     await expect(archiveCard).toContainText("No activity");
   });
 
-  test("should display activity time for All Notes card when notes exist", async ({
+  test("should display activity time for All Notes and Archive cards when notes exist", async ({
     authenticatedPage,
     testContext,
     testPrisma,
@@ -134,31 +130,6 @@ test.describe("Board Card", () => {
       },
     });
 
-    await authenticatedPage.goto("/dashboard");
-
-    const allNotesCard = authenticatedPage.locator('a[href="/boards/all-notes"]');
-    await expect(allNotesCard).toBeVisible({ timeout: 10000 });
-
-    const cardText = await allNotesCard.textContent();
-    expect(cardText).toContain("Just now");
-    expect(cardText).not.toContain("No activity");
-  });
-
-  test("should display activity time for Archive card when archived notes exist", async ({
-    authenticatedPage,
-    testContext,
-    testPrisma,
-  }) => {
-    const board = await testPrisma.board.create({
-      data: {
-        name: testContext.getBoardName("Archive Activity Test"),
-        description: testContext.prefix("Testing archive activity display"),
-        createdBy: testContext.userId,
-        organizationId: testContext.organizationId,
-      },
-    });
-
-    // Create and archive a note to generate archive activity
     await testPrisma.note.create({
       data: {
         color: "#fef3c7",
@@ -180,13 +151,19 @@ test.describe("Board Card", () => {
     await authenticatedPage.goto("/dashboard");
     await authenticatedPage.waitForLoadState("networkidle");
 
-    // Verify Archive card shows activity time
+    const allNotesCard = authenticatedPage.locator('a[href="/boards/all-notes"]');
+    await expect(allNotesCard).toBeVisible({ timeout: 10000 });
+
+    const allNotesCardText = await allNotesCard.textContent();
+    expect(allNotesCardText).toContain("Just now");
+    expect(allNotesCardText).not.toContain("No activity");
+
     const archiveCard = authenticatedPage.locator('a[href="/boards/archive"]');
     await expect(archiveCard).toBeVisible({ timeout: 10000 });
 
-    const cardText = await archiveCard.textContent();
-    expect(cardText).toContain("Just now");
-    expect(cardText).not.toContain("No activity");
+    const archiveCardText = await archiveCard.textContent();
+    expect(archiveCardText).toContain("Just now");
+    expect(archiveCardText).not.toContain("No activity");
   });
 
   test("should display correct UI states for private and public board cards", async ({
@@ -236,27 +213,23 @@ test.describe("Board Card", () => {
     await authenticatedPage.goto("/dashboard");
     await authenticatedPage.waitForLoadState("networkidle");
 
-    // Test private board card
     const privateBoardCard = authenticatedPage.locator(`[data-board-id="${privateBoard.id}"]`);
     await expect(privateBoardCard).toBeVisible({ timeout: 10000 });
 
-    // Test public board card
     const publicBoardCard = authenticatedPage.locator(`[data-board-id="${publicBoard.id}"]`);
     await expect(publicBoardCard).toBeVisible({ timeout: 10000 });
-
-    // Test Board Visibility indicators - conditional logic
-    await expect(privateBoardCard.getByLabel("Board Visibility")).toBeVisible();
     await expect(privateBoardCard.getByLabel("Board Visibility")).toContainText("Private");
 
-    await expect(publicBoardCard.getByLabel("Board Visibility")).toBeVisible();
     await expect(publicBoardCard.getByLabel("Board Visibility")).toContainText("Public");
 
-    // Verify both cards show activity time
     const privateBoardText = await privateBoardCard.textContent();
     expect(privateBoardText).toContain("Just now");
 
     const publicBoardText = await publicBoardCard.textContent();
     expect(publicBoardText).toContain("Just now");
+    await expect(
+      authenticatedPage.locator(`[href="/boards/all-notes"]`).getByLabel("Notes Count")
+    ).toHaveText("3 notes");
   });
 
   test("should display last activity on dashboard boards", async ({

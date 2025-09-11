@@ -307,7 +307,7 @@ export default function Dashboard() {
                             aria-label="Notes Count"
                             className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                           >
-                            {`${stats?.archivedNotesCount ?? 0} ${stats?.archivedNotesCount === 1 ? "note" : "notes"}`}
+                            {`${stats?.allNotesCount ?? 0} ${stats?.allNotesCount === 1 ? "note" : "notes"}`}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
