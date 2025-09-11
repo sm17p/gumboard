@@ -710,10 +710,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                 className="board-dropdown mr-0 min-w-32 sm:max-w-64 col-span-2 sm:col-span-1"
               >
                 <Button variant="ghost" className="flex items-center justify-between p-2 w-full">
-                  
-                  <div
-                    className="grid grid-cols-[auto_1rem] items-center gap-2 flex-1"
-                  >
+                  <div className="grid grid-cols-[auto_1rem] items-center gap-2 flex-1">
                     <span className="text-sm text-left font-semibold text-foreground dark:text-zinc-100 truncate">
                       {boardId === "all-notes"
                         ? "All notes"
@@ -722,11 +719,11 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                           : board?.name}
                     </span>
                     <span>
-                      {boardId === "all-notes"
-                        ? <Grid3x3 className="size-4 text-muted-foreground" />
-                        : boardId === "archive"
-                          ? <Archive className="size-4 text-muted-foreground" />
-                          : board?.isPublic ? (
+                      {boardId === "all-notes" ? (
+                        <Grid3x3 className="size-4 text-muted-foreground" />
+                      ) : boardId === "archive" ? (
+                        <Archive className="size-4 text-muted-foreground" />
+                      ) : board?.isPublic ? (
                         <Globe className="size-4 text-muted-foreground" />
                       ) : (
                         <LockKeyhole className="size-4 text-muted-foreground" />
